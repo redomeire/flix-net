@@ -13,7 +13,7 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<SuspenseWrapper/>}>
+        <Route element={<SuspenseWrapper/>}>
           <Route path="/" element={<Home />} />
           <Route element={<PrivateRoute />}>
             <Route path="/watch-list" element={<WatchList />} />
