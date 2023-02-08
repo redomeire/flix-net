@@ -2,7 +2,7 @@ import useLocalStorage from "../../hooks/useLocalStorage";
 import { Navigate, Outlet } from "react-router-dom"
 
 const PrivateRoute = () => {
-    const [token,] = useLocalStorage('Authorization', '');
+    const [token,] = useLocalStorage('session_id', '');
 
     if(token) return <Outlet/>
 
