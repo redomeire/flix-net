@@ -114,9 +114,11 @@ const Login = () => {
                                 </Button>
                             </div>
                             :
-                            <Button type="button" className="w-full bg-red-500 text-white mt-5">
-                                <Typography thickness="bold" className="text-sm">Sign up from IMDB</Typography>
-                            </Button>
+                            <a href="https://www.themoviedb.org/signup">
+                                <Button type="button" className="w-full bg-red-500 text-white mt-5">
+                                    <Typography thickness="bold" className="text-sm">Sign up from IMDB</Typography>
+                                </Button>
+                            </a>
                     }
                 </form>
             </div >

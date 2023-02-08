@@ -4,6 +4,7 @@ import AuthRoute from "./components/routes/AuthRoute"
 import PrivateRoute from "./components/routes/PrivateRoute"
 import { Outlet } from "react-router-dom"
 import Loading from "./pages/Loading"
+import SearchWrapper from "./components/context/SearchContext"
 // pages
 const Home = React.lazy(() => wait(1000).then(() => import("./pages/Home")))
 const Search = React.lazy(() => wait(1000).then(() => import("./pages/Search")))
@@ -13,25 +14,27 @@ const WatchList = React.lazy(() => wait(1000).then(() => import("./pages/WatchLi
 function App() {
   return (
     <div className="App">
-      <Routes>
-        <Route element={<SuspenseWrapper/>}>
-          <Route path="/" element={<Home />} />
-          <Route path="/search" element={<Search />} />
-          <Route element={<PrivateRoute />}>
-            <Route path="/watch-list" element={<WatchList />} />
+      <SearchWrapper>
+        <Routes>
+          <Route element={<SuspenseWrapper />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/search" element={<Search />} />
+            <Route element={<PrivateRoute />}>
+              <Route path="/watch-list" element={<WatchList />} />
+            </Route>
+            <Route element={<AuthRoute />}>
+              <Route path="/login" element={<Login />} />
+            </Route>
           </Route>
-          <Route element={<AuthRoute />}>
-            <Route path="/login" element={<Login />} />
-          </Route>
-        </Route>
-      </Routes>
+        </Routes>
+      </SearchWrapper>
     </div>
   )
 }
 
 const SuspenseWrapper = () => {
   return (
-    <React.Suspense fallback={<Loading/>}>
+    <React.Suspense fallback={<Loading />}>
       <Outlet />
     </React.Suspense>
   )

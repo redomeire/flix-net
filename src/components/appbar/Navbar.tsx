@@ -1,3 +1,4 @@
+import React from "react";
 import Button from "../button/Button";
 import { BsChevronLeft, BsChevronRight, BsSearch, BsChatDots } from "react-icons/bs";
 import { IoMdNotificationsOutline } from "react-icons/io";
@@ -7,10 +8,14 @@ import Input from "../input/Input";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import Typography from "../typography/Typography";
 import { createAxiosInstance } from "../api/AxiosInstance";
+import { SearchContext } from "../context/SearchContext";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
     const [session_id] = useLocalStorage('session_id', '')
     const axiosInstance = createAxiosInstance(session_id);
+    const { setValue, value } = React.useContext(SearchContext);
+    const navigate = useNavigate();
 
     const handleLogout = () => {
         axiosInstance.delete('/authentication/session?api_key=' + import.meta.env.VITE_APP_TMDB_API_KEY, {
@@ -18,16 +23,16 @@ const Navbar = () => {
                 session_id: session_id
             }
         })
-        .then((result) => {
-            window.localStorage.removeItem('session_id')
-            console.log(result);
-            
-            setTimeout(() => {
-                window.location.reload()
-            }, 2000);
-        }).catch((err) => {
-            console.error(err);
-        });
+            .then((result) => {
+                window.localStorage.removeItem('session_id')
+                console.log(result);
+
+                setTimeout(() => {
+                    window.location.reload()
+                }, 2000);
+            }).catch((err) => {
+                console.error(err);
+            });
     }
 
     return (
@@ -39,12 +44,18 @@ const Navbar = () => {
                 <Button className="mr-10">
                     <BsChevronRight />
                 </Button>
-                <Input
-                    type="text"
-                    placeholder="Search everything"
-                    className="bg-black"
-                    beginningIcon={<BsSearch />}
-                />
+                <form onSubmit={(e) => { 
+                    e.preventDefault()
+                    navigate(`/search?q=${value}`) 
+                    }}>
+                    <Input
+                        type="text"
+                        placeholder="Search everything"
+                        className="bg-black"
+                        beginningIcon={<BsSearch />}
+                        onChange={e => { setValue(e.target.value) }}
+                    />
+                </form>
             </div>
             <div className="flex items-center">
                 <Button>
