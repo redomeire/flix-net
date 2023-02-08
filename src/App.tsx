@@ -6,6 +6,7 @@ import { Outlet } from "react-router-dom"
 import Loading from "./pages/Loading"
 // pages
 const Home = React.lazy(() => wait(1000).then(() => import("./pages/Home")))
+const Search = React.lazy(() => wait(1000).then(() => import("./pages/Search")))
 const Login = React.lazy(() => wait(1000).then(() => import("./pages/Login")))
 const WatchList = React.lazy(() => wait(1000).then(() => import("./pages/WatchList")))
 
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route element={<SuspenseWrapper/>}>
           <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Search />} />
           <Route element={<PrivateRoute />}>
             <Route path="/watch-list" element={<WatchList />} />
           </Route>

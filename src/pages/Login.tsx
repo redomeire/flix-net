@@ -7,50 +7,65 @@ import Typography from "../components/typography/Typography";
 import { SiNetflix } from "react-icons/si";
 import useLocalStorage from "../hooks/useLocalStorage";
 import axios from "axios";
+import { createAxiosInstance } from "../components/api/AxiosInstance";
+import { useCookies } from "react-cookie";
+
+// cookie management
 
 const Login = () => {
     const [tab, setTab] = React.useState<"login" | "register">('login');
-    const [, setToken] = useLocalStorage('Authorization', '');
+    const [session, setSession] = useLocalStorage('session_id', '');
+    const axiosInstance = createAxiosInstance();
+    const [cookie, setCookie] = useCookies(['request_token']);
 
     const [login, setLogin] = React.useState({
-        email: '',
+        username: '',
         password: ''
     })
 
-    const [register, setRegister] = React.useState({
-        username: '',
-        email: '',
-        password: ''
-    })
+    React.useEffect(() => {
+        axiosInstance.get('/authentication/token/new?api_key=' + `${import.meta.env.VITE_APP_TMDB_API_KEY}`)
+            .then((result) => {
+                setCookie('request_token', result.data.request_token, {
+                    expires: new Date(result.data.expires_at)
+                })
+            }).catch((err) => {
+                console.error(err);
+                alert(err.message)
+            });
+    }, [])
 
     const handleSubmit = (e: { preventDefault: () => void }) => {
         e.preventDefault()
+        axiosInstance.post('/authentication/token/validate_with_login?api_key=' + import.meta.env.VITE_APP_TMDB_API_KEY, {
+            username: login.username,
+            password: login.password,
+            request_token: cookie.request_token,
+        })
+            .then((result) => {
+                console.log(result);
+                setCookie('request_token', result.data.request_token, {
+                    expires: new Date(result.data.expires_at)
+                })
 
-        if (tab === 'login') {
+                axiosInstance.post('/authentication/session/new?api_key=' + import.meta.env.VITE_APP_TMDB_API_KEY, {
+                    request_token: result.data.request_token
+                })
+                    .then((result) => {
+                        console.log(result)
 
-            axios.post('https://reqres.in/api/login', {
-                email: login.email,
-                password: login.password
-            })
-                .then((result) => {
-                    setToken(result.data.token)
-                    setTimeout(() => {
-                        window.location.reload()
-                    }, 1000);
-                }).catch((err) => {
-                    console.error(err);
-                });
-        } else {
-            axios.post('https://reqres.in/api/register', {
-                email: register.email,
-                password: register.password
-            })
-                .then((result) => {
-                    console.log(result);
-                }).catch((err) => {
-                    console.error(err);
-                });
-        }
+                        setSession(result.data.session_id)
+
+                        setTimeout(() => {
+                            window.location.reload()
+                        }, 1000);
+
+                    }).catch((err) => {
+                        console.error(err);
+                    });
+            }).catch((err) => {
+                console.error(err);
+            });
     }
 
     return (
@@ -73,74 +88,39 @@ const Login = () => {
                         tab === 'login' ?
                             <div>
                                 <Input
-                                name="login-email"
-                                    type="email"
-                                    placeholder="email"
-                                    className="bg-white w-full mb-5 text-black"
-                                    onChange={e => {
-                                        setLogin(prev => {
-                                            return { ...prev, email: e.target.value }
-                                        })
-                                    }}
-                                />
-                                <Input
-                                name="login-password"
-                                    type="password"
-                                    placeholder="password"
-                                    className="bg-white w-full text-black"
-                                    onChange={e => {
-                                        setLogin(prev => {
-                                            return { ...prev, password: e.target.value }
-                                        })
-                                    }}
-                                />
-                                <Button className="w-full bg-red-500 text-white mt-5">
-                                    <Typography thickness="bold" className="text-sm">Sign in</Typography>
-                                </Button>
-                            </div>
-                            :
-                            <div>
-                                <Input
-                                name="register-username"
+                                    name="login-username"
                                     type="text"
                                     placeholder="username"
                                     className="bg-white w-full mb-5 text-black"
                                     onChange={e => {
-                                        setRegister(prev => {
+                                        setLogin(prev => {
                                             return { ...prev, username: e.target.value }
                                         })
                                     }}
                                 />
                                 <Input
-                                name="register-email"
-                                    type="email"
-                                    placeholder="email"
-                                    className="bg-white w-full mb-5 text-black"
-                                    onChange={e => {
-                                        setRegister(prev => {
-                                            return { ...prev, email: e.target.value }
-                                        })
-                                    }}
-                                />
-                                <Input
-                                name="register-password"
+                                    name="login-password"
                                     type="password"
                                     placeholder="password"
                                     className="bg-white w-full text-black"
                                     onChange={e => {
-                                        setRegister(prev => {
+                                        setLogin(prev => {
                                             return { ...prev, password: e.target.value }
                                         })
                                     }}
                                 />
-                                <Button className="w-full bg-red-500 text-white mt-5">
-                                    <Typography thickness="bold" className="text-sm">Sign up</Typography>
+                                <Button type="submit" className="w-full bg-red-500 text-white mt-5">
+                                    <Typography thickness="bold" className="text-sm">Sign in</Typography>
                                 </Button>
                             </div>
+                            :
+                            <Button type="button" className="w-full bg-red-500 text-white mt-5">
+                                <Typography thickness="bold" className="text-sm">Sign up from IMDB</Typography>
+                            </Button>
                     }
                 </form>
-            </div>
-        </AppLayout>
+            </div >
+        </AppLayout >
     );
 }
 

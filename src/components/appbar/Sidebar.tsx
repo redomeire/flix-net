@@ -1,14 +1,20 @@
 import { SiNetflix } from "react-icons/si";
 import Typography from "../typography/Typography";
 import { useNavigate } from "react-router-dom";
-import { FaCompass, FaRegHeart } from "react-icons/fa";
+import { FaCompass, FaRegHeart, FaSearch } from "react-icons/fa";
 import { GoCalendar } from "react-icons/go";
+import TMDB from "../../assets/tmdb.svg";
 
 const sidebarData = [
     {
+        name: 'home',
+        icon: <FaSearch size={25} />,
+        path: '/'
+    },
+    {
         name: 'browse',
         icon: <FaCompass size={25} />,
-        path: '/'
+        path: '/search'
     },
     {
         name: 'watchlist',
@@ -47,6 +53,12 @@ const Sidebar = () => {
                         )
                     })
                 }
+            </div>
+            <div className="mt-20 w-full flex justify-center items-center flex-col">
+                <Typography className="text-xl mb-3 font-semibold">Powered by</Typography>
+                <a href="https://www.themoviedb.org">
+                    <img src={TMDB} alt="the movie db" className="md:w-[80px]"/>
+                </a>
             </div>
         </nav>
     );
