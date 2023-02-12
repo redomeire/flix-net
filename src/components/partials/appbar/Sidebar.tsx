@@ -1,9 +1,9 @@
 import { SiNetflix } from "react-icons/si";
-import Typography from "../typography/Typography";
+import Typography from "../../typography/Typography";
 import { useNavigate } from "react-router-dom";
 import { FaCompass, FaRegHeart, FaSearch } from "react-icons/fa";
 import { GoCalendar } from "react-icons/go";
-import TMDB from "../../assets/tmdb.svg";
+import TMDB from "../../../assets/tmdb.svg";
 
 const sidebarData = [
     {

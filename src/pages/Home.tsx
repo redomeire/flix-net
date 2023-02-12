@@ -2,7 +2,7 @@ import React from "react";
 import { FaImdb } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
 import Button from "../components/button/Button";
-import CardMusic from "../components/card/CardMusic";
+import CardMusic from "../features/movie/components/CardMusic";
 import Input from "../components/input/Input";
 import AppLayout from "../components/partials/Layouts/AppLayout";
 import Typography from "../components/typography/Typography";

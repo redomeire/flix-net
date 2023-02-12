@@ -1,14 +1,14 @@
 import React from "react";
-import Button from "../button/Button";
+import Button from "../../button/Button";
 import { BsChevronLeft, BsChevronRight, BsSearch, BsChatDots } from "react-icons/bs";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { GiBalaclava } from "react-icons/gi";
-import Input from "../input/Input";
+import Input from "../../input/Input";
 
-import useLocalStorage from "../../hooks/useLocalStorage";
-import Typography from "../typography/Typography";
-import { createAxiosInstance } from "../api/AxiosInstance";
-import { SearchContext } from "../context/SearchContext";
+import useLocalStorage from "../../../hooks/useLocalStorage";
+import Typography from "../../typography/Typography";
+import { createAxiosInstance } from "../../api/AxiosInstance";
+import { SearchContext } from "../../../context/SearchContext";
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {

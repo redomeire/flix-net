@@ -1,13 +1,14 @@
 import React from "react";
 import { useSearchParams } from "react-router-dom";
 import { createAxiosInstance } from "../components/api/AxiosInstance";
-import CardMusic from "../components/card/CardMusic";
+import CardMusic from "../features/movie/components/CardMusic";
 import AppLayout from "../components/partials/Layouts/AppLayout";
 
 type movie = {
     overview?: string, 
     poster_path?: string, 
-    title?: string
+    title?: string,
+    id?: number
 }[]
 
 const Search = () => {
@@ -36,6 +37,7 @@ const Search = () => {
                         return(
                             <CardMusic
                             key={index}
+                            id={movie.id}
                             description={movie.overview}
                             imageUrl={imageBaseUrl + movie.poster_path}
                             title={movie.title}
