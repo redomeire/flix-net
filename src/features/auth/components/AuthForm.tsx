@@ -1,16 +1,15 @@
 import React from "react";
 import { useCookies } from "react-cookie";
 import { SiNetflix } from "react-icons/si";
-import { createAxiosInstance } from "../../../components/api/AxiosInstance";
 import Button from "../../../components/button/Button";
 import Input from "../../../components/input/Input";
 import Typography from "../../../components/typography/Typography";
 import useLocalStorage from "../../../hooks/useLocalStorage";
+import { getRequestToken, getSessionId, validateToken } from "../service/login";
 
 const AuthForm = () => {
     const [tab, setTab] = React.useState<"login" | "register">('login');
     const [, setSession] = useLocalStorage('session_id', '');
-    const axiosInstance = createAxiosInstance();
     const [cookie, setCookie] = useCookies(['request_token']);
 
     const [login, setLogin] = React.useState({
@@ -19,48 +18,41 @@ const AuthForm = () => {
     })
 
     React.useEffect(() => {
-        axiosInstance.get('/authentication/token/new?api_key=' + `${import.meta.env.VITE_APP_TMDB_API_KEY}`)
-            .then((result) => {
-                setCookie('request_token', result.data.request_token, {
-                    expires: new Date(result.data.expires_at)
-                })
-            }).catch((err) => {
-                console.error(err);
-                alert(err.message)
-            });
+        const getToken = async () => {
+            const res = await getRequestToken()
+            if (!res) return
+
+            setCookie('request_token', res.data.request_token, {
+                expires: new Date(res.data.expires_at)
+            })
+        }
+        getToken()
     }, [])
 
-    const handleSubmit = (e: { preventDefault: () => void }) => {
+    const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault()
-        axiosInstance.post('/authentication/token/validate_with_login?api_key=' + import.meta.env.VITE_APP_TMDB_API_KEY, {
-            username: login.username,
-            password: login.password,
-            request_token: cookie.request_token,
-        })
-            .then((result) => {
-                console.log(result);
-                setCookie('request_token', result.data.request_token, {
-                    expires: new Date(result.data.expires_at)
-                })
+        try {
+            const result = await validateToken(login, cookie)
 
-                axiosInstance.post('/authentication/session/new?api_key=' + import.meta.env.VITE_APP_TMDB_API_KEY, {
-                    request_token: result.data.request_token
-                })
-                    .then((result) => {
-                        console.log(result)
+            if (!result) return
 
-                        setSession(result.data.session_id)
+            setCookie('request_token', result.data.request_token, {
+                expires: new Date(result.data.expires_at)
+            })
 
-                        setTimeout(() => {
-                            window.location.reload()
-                        }, 1000);
+            const sessionId = await getSessionId(result)
 
-                    }).catch((err) => {
-                        console.error(err);
-                    });
-            }).catch((err) => {
-                console.error(err);
-            });
+            if (!sessionId) return
+
+            setSession(sessionId.data.session_id)
+
+            setTimeout(() => {
+                window.location.reload()
+            }, 1000);
+
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     return (

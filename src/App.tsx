@@ -11,6 +11,7 @@ const Search = React.lazy(() => wait(1000).then(() => import("./pages/Search")))
 const Login = React.lazy(() => wait(1000).then(() => import("./pages/Login")))
 const WatchList = React.lazy(() => wait(1000).then(() => import("./pages/WatchList")))
 const MovieDetail = React.lazy(() => wait(1000).then(() => import("./pages/MovieDetail")))
+const Profile = React.lazy(() => wait(1000).then(() => import("./pages/Profile")))
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="/movie/:id" element={<MovieDetail />} />
             <Route element={<PrivateRoute />}>
               <Route path="/watch-list" element={<WatchList />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
             <Route element={<AuthRoute />}>
               <Route path="/login" element={<Login />} />

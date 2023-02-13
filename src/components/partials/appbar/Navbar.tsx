@@ -7,32 +7,29 @@ import Input from "../../input/Input";
 
 import useLocalStorage from "../../../hooks/useLocalStorage";
 import Typography from "../../typography/Typography";
-import { createAxiosInstance } from "../../api/AxiosInstance";
 import { SearchContext } from "../../../context/SearchContext";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../../../features/auth/service/logout";
 
 const Navbar = () => {
     const [session_id] = useLocalStorage('session_id', '')
-    const axiosInstance = createAxiosInstance(session_id);
     const { setValue, value } = React.useContext(SearchContext);
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        axiosInstance.delete('/authentication/session?api_key=' + import.meta.env.VITE_APP_TMDB_API_KEY, {
-            data: {
-                session_id: session_id
-            }
-        })
-            .then((result) => {
-                window.localStorage.removeItem('session_id')
-                console.log(result);
+    const handleLogout = async () => {
+        try {
+            const result = await logout(session_id);
 
-                setTimeout(() => {
-                    window.location.reload()
-                }, 2000);
-            }).catch((err) => {
-                console.error(err);
-            });
+            if(!result) return
+
+            window.localStorage.removeItem('session_id')
+
+            setTimeout(() => {
+                window.location.reload()
+            }, 1000);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     return (

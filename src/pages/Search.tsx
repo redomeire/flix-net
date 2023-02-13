@@ -1,8 +1,8 @@
 import React from "react";
 import { useSearchParams } from "react-router-dom";
-import { createAxiosInstance } from "../components/api/AxiosInstance";
 import CardMusic from "../features/movie/components/CardMusic";
 import AppLayout from "../components/partials/Layouts/AppLayout";
+import { GET } from "../features/movie/service/search";
 
 type movie = {
     overview?: string, 
@@ -12,21 +12,17 @@ type movie = {
 }[]
 
 const Search = () => {
-    // const { value } = React.useContext(SearchContext)
     const [movies, setMovies] = React.useState<movie>([])
     const [searchParams] = useSearchParams();
     const imageBaseUrl = 'https://www.themoviedb.org/t/p/w220_and_h330_face/'
-    const axiosInstance = createAxiosInstance();
 
     React.useEffect(() => {
-        axiosInstance.get('/search/movie?api_key=' + import.meta.env.VITE_APP_TMDB_API_KEY + `&query=${searchParams.get("q")}&include_adult=false`)
-        .then((result) => {
-            console.log(result);
-            
-            setMovies(result.data.results)
-        }).catch((err) => {
-            console.error(err);
-        });
+        const getData = async () => {
+            const result = await GET(searchParams.get('q')!)
+            setMovies(result?.data.results)
+        }
+
+        getData()
     }, [searchParams.get('q')])
     
     return ( 
